@@ -3,44 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live AFL Scoreboard</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #333;
-      color: black; /* Change font color to black */
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+  <title>Event Stream Listener</title>
+</head>
+<body>
+  <h1>Score Event Listener</h1>
+  <pre id="scoreData"></pre>
 
-    .scoreboard {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 50px;
-      background-color: #f0f0f0; /* Lighter background for scoreboard */
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
+  <script>
+    // Create a new EventSource object
+    const eventSource = new EventSource('https://api.squiggle.com.au/sse/test');
 
-    .team {
-      text-align: center;
-      padding: 20px;
-      background-color: #fff;
-      border-radius: 10px;
-      width: 200px;
-      min-width: 200px;
-    }
+    // Add an event listener for the 'score' event
+    eventSource.addEventListener('score', function(event) {
+      // Parse the event data
+      const eventData = JSON.parse(event.data);
 
-    .score {
-      font-size: 5rem; /* Larger score font */
-      font-weight: bold;
-      color: black; /* Ensures the score text is black */
-    }
+      // Log the event data to the console
+      console.log('Score event received:', eventData);
 
-    /* Optional: Add a 
+      // Display the event data on the webpage
+      const scoreDataElement = document.getElementById('scoreData');
+      scoreDataElement.textContent = JSON.stringify(eventData, null, 2);
+    });
+
+    // Add an event listener for errors
+    eventSource.onerror = function(error) {
+      console.error('Error with event source:', error);
+    };
+  </script>
+</body>
+</html>
