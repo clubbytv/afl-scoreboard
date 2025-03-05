@@ -55,8 +55,11 @@
   </div>
 
   <script>
+    // Use a CORS proxy to fetch data
+    const apiUrl = 'https://corsproxy.io/?https://api.squiggle.com.au/sse/test';
+
     // Create a new EventSource object
-    const eventSource = new EventSource('https://api.squiggle.com.au/sse/test');
+    const eventSource = new EventSource(apiUrl);
 
     // Add an event listener for the 'score' event
     eventSource.addEventListener('score', function(event) {
