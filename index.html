@@ -8,7 +8,7 @@
     body {
       font-family: Arial, sans-serif;
       background-color: #333;
-      color: white;
+      color: black; /* Change font color to black */
       margin: 0;
       padding: 0;
       display: flex;
@@ -22,81 +22,25 @@
       justify-content: center;
       align-items: center;
       gap: 50px;
-      background-color: #222;
-      padding: 20px;
+      background-color: #f0f0f0; /* Lighter background for scoreboard */
+      padding: 30px;
       border-radius: 15px;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
     .team {
       text-align: center;
       padding: 20px;
-      background-color: #444;
+      background-color: #fff;
       border-radius: 10px;
       width: 200px;
       min-width: 200px;
     }
 
-    .team-name {
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
     .score {
-      font-size: 3rem;
+      font-size: 5rem; /* Larger score font */
       font-weight: bold;
-      color: #FFD700;
+      color: black; /* Ensures the score text is black */
     }
 
-    .game-time {
-      margin-top: 20px;
-      font-size: 1.5rem;
-      color: #bbb;
-    }
-  </style>
-</head>
-<body>
-  <div class="scoreboard">
-    <div class="team">
-      <div class="team-name" id="team1Name">Home Team</div>
-      <div class="score" id="team1Score">0</div>
-    </div>
-    <div class="team">
-      <div class="team-name" id="team2Name">Away Team</div>
-      <div class="score" id="team2Score">0</div>
-    </div>
-  </div>
-
-  <script>
-    // Create a new EventSource object
-    const eventSource = new EventSource('https://api.squiggle.com.au/sse/test');
-
-    // Add an event listener for the 'score' event
-    eventSource.addEventListener('score', function(event) {
-      // Parse the event data
-      const eventData = JSON.parse(event.data);
-      console.log('Score event received:', eventData);
-
-      // Extract score details from the event data
-      const scoreData = eventData.score;
-
-      // Update the scoreboard with the new scores
-      document.getElementById("team1Score").textContent = scoreData.hscore;
-      document.getElementById("team2Score").textContent = scoreData.ascore;
-
-      // Update the game time, if available
-      const timeStr = eventData.timestr || "N/A";
-      const gameTimeElement = document.createElement("div");
-      gameTimeElement.className = "game-time";
-      gameTimeElement.textContent = `Game Time: ${timeStr}`;
-      document.body.appendChild(gameTimeElement);
-    });
-
-    // Add an event listener for errors
-    eventSource.onerror = function(error) {
-      console.error('Error with event source:', error);
-    };
-  </script>
-</body>
-</html>
+    /* Optional: Add a 
