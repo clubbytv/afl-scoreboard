@@ -55,21 +55,40 @@
   </div>
 
   <script>
-    // Function to fetch the score data
-    function fetchScore() {
-      // Use the CORS proxy to fetch the data
-      const apiUrl = 'https://corsproxy.io/?https://api.squiggle.com.au/sse/test';
+    // CORS proxy to allow the request
+    const apiUrl = 'https://corsproxy.io/?https://api.squiggle.com.au/sse/test';
 
-      fetch(apiUrl)
-        .then(response => response.json())  // Parse the JSON response
-        .then(eventData => {
-          console.log("Score event received:", eventData);
+    // Create a new EventSource object to listen for updates
+    const eventSource = new EventSource(apiUrl);
 
-          // Extract the nested score object
-          const scoreData = eventData.score;
+    // Add an event listener for the 'score' event
+    eventSource.addEventListener('score', function(event) {
+      try {
+        // Parse the event data
+        const eventData = JSON.parse(event.data);
 
-          // Update the scoreboard with the extracted scores
-          document.getElementById("team1Score").textContent = scoreData.hscore;
-          document.getElementById("team2Score").textContent = scoreData.ascore;
-        })
-  
+        console.log("Score event received:", eventData);
+
+        // Extract the score details
+        const scoreData = eventData.score;
+
+        // Update the scores on the scoreboard
+        document.getElementById("team1Score").textContent = scoreData.hscore;
+        document.getElementById("team2Score").textContent = scoreData.ascore;
+        
+      } catch (error) {
+        console.error("Error processing event data:", error);
+      }
+    });
+
+    // Handle errors from EventSource
+    eventSource.onerror = function() {
+      console.warn("Error with EventSource. Trying to reconnect...");
+      eventSource.close();
+      setTimeout(() => {
+        location.reload(); // Reload the page to reconnect
+      }, 5000);
+    };
+  </script>
+</body>
+</html>
