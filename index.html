@@ -3,91 +3,99 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AFL Scoreboard</title>
+  <title>Live AFL Scoreboard</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: black;
+      background-color: #333;
       color: white;
       margin: 0;
       padding: 0;
-    }
-
-    .scoreboard {
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
     }
 
-    .team {
-      margin: 20px;
+    .scoreboard {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 50px;
+      background-color: #222;
       padding: 20px;
-      background-color: #333;
-      border-radius: 10px;
-      min-width: 250px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+
+    .team {
       text-align: center;
+      padding: 20px;
+      background-color: #444;
+      border-radius: 10px;
+      width: 200px;
+      min-width: 200px;
     }
 
     .team-name {
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: bold;
+      margin-bottom: 10px;
     }
 
     .score {
-      font-size: 4rem;
+      font-size: 3rem;
       font-weight: bold;
       color: #FFD700;
+    }
+
+    .game-time {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      color: #bbb;
     }
   </style>
 </head>
 <body>
   <div class="scoreboard">
     <div class="team">
-      <div class="team-name" id="team1Name">Home</div>
+      <div class="team-name" id="team1Name">Home Team</div>
       <div class="score" id="team1Score">0</div>
     </div>
     <div class="team">
-      <div class="team-name" id="team2Name">Away</div>
+      <div class="team-name" id="team2Name">Away Team</div>
       <div class="score" id="team2Score">0</div>
     </div>
   </div>
 
   <script>
-    // CORS proxy to allow the request
-    const apiUrl = 'https://corsproxy.io/?https://api.squiggle.com.au/sse/test';
-
-    // Create a new EventSource object to listen for updates
-    const eventSource = new EventSource(apiUrl);
+    // Create a new EventSource object
+    const eventSource = new EventSource('https://api.squiggle.com.au/sse/test');
 
     // Add an event listener for the 'score' event
     eventSource.addEventListener('score', function(event) {
-      try {
-        // Parse the event data
-        const eventData = JSON.parse(event.data);
+      // Parse the event data
+      const eventData = JSON.parse(event.data);
+      console.log('Score event received:', eventData);
 
-        console.log("Score event received:", eventData);
+      // Extract score details from the event data
+      const scoreData = eventData.score;
 
-        // Extract the score details
-        const scoreData = eventData.score;
+      // Update the scoreboard with the new scores
+      document.getElementById("team1Score").textContent = scoreData.hscore;
+      document.getElementById("team2Score").textContent = scoreData.ascore;
 
-        // Update the scores on the scoreboard
-        document.getElementById("team1Score").textContent = scoreData.hscore;
-        document.getElementById("team2Score").textContent = scoreData.ascore;
-        
-      } catch (error) {
-        console.error("Error processing event data:", error);
-      }
+      // Update the game time, if available
+      const timeStr = eventData.timestr || "N/A";
+      const gameTimeElement = document.createElement("div");
+      gameTimeElement.className = "game-time";
+      gameTimeElement.textContent = `Game Time: ${timeStr}`;
+      document.body.appendChild(gameTimeElement);
     });
 
-    // Handle errors from EventSource
-    eventSource.onerror = function() {
-      console.warn("Error with EventSource. Trying to reconnect...");
-      eventSource.close();
-      setTimeout(() => {
-        location.reload(); // Reload the page to reconnect
-      }, 5000);
+    // Add an event listener for errors
+    eventSource.onerror = function(error) {
+      console.error('Error with event source:', error);
     };
   </script>
 </body>
