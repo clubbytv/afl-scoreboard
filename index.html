@@ -1,60 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AFL Scoreboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: black;
-            color: white;
-        }
-        .scoreboard {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 3rem;
-            padding: 20px;
-        }
-        .team {
-            margin: 20px;
-            padding: 20px;
-            background-color: #333;
-            border-radius: 10px;
-            min-width: 200px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AFL Scoreboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: black;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+
+    .scoreboard {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .team {
+      margin: 20px;
+      padding: 20px;
+      background-color: #333;
+      border-radius: 10px;
+      min-width: 250px;
+      text-align: center;
+    }
+
+    .team-name {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .score {
+      font-size: 4rem;
+      font-weight: bold;
+      color: #FFD700;
+    }
+  </style>
 </head>
 <body>
-    <div class="scoreboard">
-        <div class="team" id="team1">Team 1: 0</div>
-        <div class="team" id="team2">Team 2: 0</div>
+  <div class="scoreboard">
+    <div class="team">
+      <div class="team-name" id="team1Name">Team 1</div>
+      <div class="score" id="team1Score">0</div>
     </div>
+    <div class="team">
+      <div class="team-name" id="team2Name">Team 2</div>
+      <div class="score" id="team2Score">0</div>
+    </div>
+  </div>
 
-    <script>
-        async function fetchScores() {
-            try {
-                const response = await fetch(https://api.squiggle.com.au/sse/test); // Replace with your API URL
-                const data = await response.json();
+  <script>
+    // Create a new EventSource object
+    const eventSource = new EventSource('https://api.squiggle.com.au/sse/test');
 
-                // Assuming the API response structure contains the needed info
-                const team1 = data.games[0].hteam; // Home team
-                const team2 = data.games[0].ateam; // Away team
-                const score1 = data.games[0].hscore; // Home team score
-                const score2 = data.games[0].ascore; // Away team score
+    // Add an event listener for the 'score' event
+    eventSource.addEventListener('score', function(event) {
+      // Parse the event data
+      const eventData = JSON.parse(event.data);
 
-                document.getElementById("team1").textContent = `${team1}: ${score1}`;
-                document.getElementById("team2").textContent = `${team2}: ${score2}`;
-            } catch (error) {
-                console.error("Error fetching scores:", error);
-            }
-        }
+      // Log the event data to the console (for debugging)
+      console.log('Score event received:', eventData);
 
-        // Fetch scores every 10 seconds
-        setInterval(fetchScores, 10000);
-        fetchScores();
-    </script>
+      // Extract team names and scores
+      const homeTeam = eventData.hteam;
+      const awayTeam = eventData.ateam;
+      const homeScore = eventData.hscore;
+      const awayScore = eventData.ascore;
+
+      // Update the scoreboard
+      document.getElementById("team1Name").textContent = homeTeam;
+      document.getElementById("team2Name").textContent = awayTeam;
+      document.getElementById("team1Score").textContent = homeScore;
+      document.getElementById("team2Score").textContent = awayScore;
+    });
+
+    // Add an event listener for errors
+    eventSource.onerror = function(error) {
+      console.error('Error with event source:', error);
+    };
+  </script>
 </body>
 </html>
