@@ -45,11 +45,11 @@
 <body>
   <div class="scoreboard">
     <div class="team">
-      <div class="team-name" id="team1Name">Team 1</div>
+      <div class="team-name" id="team1Name">Home</div>
       <div class="score" id="team1Score">0</div>
     </div>
     <div class="team">
-      <div class="team-name" id="team2Name">Team 2</div>
+      <div class="team-name" id="team2Name">Away</div>
       <div class="score" id="team2Score">0</div>
     </div>
   </div>
@@ -60,28 +60,31 @@
 
     // Add an event listener for the 'score' event
     eventSource.addEventListener('score', function(event) {
-      // Parse the event data
-      const eventData = JSON.parse(event.data);
+      try {
+        // Parse the event data
+        const eventData = JSON.parse(event.data);
 
-      // Log the event data to the console (for debugging)
-      console.log('Score event received:', eventData);
+        console.log("Score event received:", eventData);
 
-      // Extract team names and scores
-      const homeTeam = eventData.hteam;
-      const awayTeam = eventData.ateam;
-      const homeScore = eventData.hscore;
-      const awayScore = eventData.ascore;
+        // Extract the nested score object
+        const scoreData = eventData.score;
 
-      // Update the scoreboard
-      document.getElementById("team1Name").textContent = homeTeam;
-      document.getElementById("team2Name").textContent = awayTeam;
-      document.getElementById("team1Score").textContent = homeScore;
-      document.getElementById("team2Score").textContent = awayScore;
+        // Update the scoreboard with the extracted scores
+        document.getElementById("team1Score").textContent = scoreData.hscore;
+        document.getElementById("team2Score").textContent = scoreData.ascore;
+
+      } catch (error) {
+        console.error("Error processing event data:", error);
+      }
     });
 
-    // Add an event listener for errors
-    eventSource.onerror = function(error) {
-      console.error('Error with event source:', error);
+    // Handle EventSource errors
+    eventSource.onerror = function() {
+      console.warn("EventSource disconnected. Attempting to reconnect...");
+      eventSource.close();
+      setTimeout(() => {
+        location.reload();
+      }, 5000);
     };
   </script>
 </body>
