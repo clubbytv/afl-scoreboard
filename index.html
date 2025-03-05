@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Stream Listener</title>
+</head>
+<body>
+  <h1>Score Event Listener</h1>
+  <pre id="scoreData"></pre>
+
+  <script>
+    // Create a new EventSource object
+    const eventSource = new EventSource('https://api.squiggle.com.au/sse/test');
+
+    // Add an event listener for the 'score' event
+    eventSource.addEventListener('score', function(event) {
+      // Parse the event data
+      const eventData = JSON.parse(event.data);
+
+      // Log the event data to the console
+      console.log('Score event received:', eventData);
+
+      // Display the event data on the webpage
+      const scoreDataElement = document.getElementById('scoreData');
+      scoreDataElement.textContent = JSON.stringify(eventData, null, 2);
+    });
+
+    // Add an event listener for errors
+    eventSource.onerror = function(error) {
+      console.error('Error with event source:', error);
+    };
+  </script>
+</body>
+</html>
