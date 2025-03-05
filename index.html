@@ -22,7 +22,7 @@
       justify-content: space-between;
       align-items: center;
       gap: 30px;
-      background-color: transparent; /* Transparent background */
+      background-color: #f0f0f0; /* Light background color */
       padding: 40px;
       border-radius: 15px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -76,7 +76,7 @@
       const eventData = JSON.parse(event.data);
       console.log('Score event received:', eventData);
 
-      // Extract the score data, ignoring the time and other information
+      // Extract score details from the event data
       const scoreData = eventData.score;
 
       // Update the scoreboard with the new scores
