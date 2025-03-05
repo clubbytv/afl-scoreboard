@@ -1,35 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event Stream Listener</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFL Scoreboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: black;
+            color: white;
+        }
+        .scoreboard {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            padding: 20px;
+        }
+        .team {
+            margin: 20px;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 10px;
+            min-width: 200px;
+        }
+    </style>
 </head>
 <body>
-  <h1>Score Event Listener</h1>
-  <pre id="scoreData"></pre>
+    <div class="scoreboard">
+        <div class="team" id="team1">Team 1: 0</div>
+        <div class="team" id="team2">Team 2: 0</div>
+    </div>
 
-  <script>
-    // Create a new EventSource object
-    const eventSource = new EventSource('https://api.squiggle.com.au/sse/test');
+    <script>
+        async function fetchScores() {
+            try {
+                const response = await fetch("YOUR_SQUIGGLE_API_URL"); // Replace with your API URL
+                const data = await response.json();
 
-    // Add an event listener for the 'score' event
-    eventSource.addEventListener('score', function(event) {
-      // Parse the event data
-      const eventData = JSON.parse(event.data);
+                // Assuming the API response structure contains the needed info
+                const team1 = data.games[0].hteam; // Home team
+                const team2 = data.games[0].ateam; // Away team
+                const score1 = data.games[0].hscore; // Home team score
+                const score2 = data.games[0].ascore; // Away team score
 
-      // Log the event data to the console
-      console.log('Score event received:', eventData);
+                document.getElementById("team1").textContent = `${team1}: ${score1}`;
+                document.getElementById("team2").textContent = `${team2}: ${score2}`;
+            } catch (error) {
+                console.error("Error fetching scores:", error);
+            }
+        }
 
-      // Display the event data on the webpage
-      const scoreDataElement = document.getElementById('scoreData');
-      scoreDataElement.textContent = JSON.stringify(eventData, null, 2);
-    });
-
-    // Add an event listener for errors
-    eventSource.onerror = function(error) {
-      console.error('Error with event source:', error);
-    };
-  </script>
+        // Fetch scores every 10 seconds
+        setInterval(fetchScores, 10000);
+        fetchScores();
+    </script>
 </body>
 </html>
