@@ -68,7 +68,7 @@
 
   <script>
     // Create a new EventSource object
-    const eventSource = new EventSource('https://api.squiggle.com.au/sse/test');
+    const eventSource = new EventSource('https://api.squiggle.com.au/sse/events');
 
     // Add an event listener for the 'score' event
     eventSource.addEventListener('score', function(event) {
